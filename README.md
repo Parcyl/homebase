@@ -36,19 +36,19 @@ You record your screen and narrate. homebase watches for the finished session, p
 
 Real output from one session. *(Click any image to enlarge and read the detail.)*
 
-<h3 align="center">Every bug, triaged and reproducible</h3>
+<h3 align="center"><img src="docs/icons/bug.svg" height="20" alt=""> &nbsp;Every bug, triaged and reproducible</h3>
 
 <p align="center">One session's <code>DIGEST.md</code>: 49 bugs sorted by zone and severity, each with repro steps and a link to the screenshot at its exact timecode.</p>
 
 ![DIGEST.md triage: 49 bugs sorted by zone and severity, each with what broke, expected behavior, a suggested fix, and a link to the screenshot at its timecode](docs/digest-1-triage.png)
 
-<h3 align="center">See how every screen connects</h3>
+<h3 align="center"><img src="docs/icons/workflow.svg" height="20" alt=""> &nbsp;See how every screen connects</h3>
 
 <p align="center">homebase also reconstructs how your product's panels and screens actually connect, as a clear diagram plus step-by-step flows.</p>
 
 ![DIGEST.md workflow-connection map: an auto-generated map of how the product's panels and screens connect, with a panel-layout diagram and step-by-step flows](docs/digest-2-workflow-map.png)
 
-<h3 align="center">Catch every broken path</h3>
+<h3 align="center"><img src="docs/icons/unplug.svg" height="20" alt=""> &nbsp;Catch every broken path</h3>
 
 <p align="center">Every broken or unwired connection the walkthrough surfaced, in one table your team can work straight off.</p>
 

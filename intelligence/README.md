@@ -1,84 +1,59 @@
-# LangGraph Intelligence Spine
+# Intelligence Spine
 
-Python FastAPI service. Receives transcripts and keyframe paths from n8n, runs them through a LangGraph reasoning graph, writes outputs back to the Homebase repo. Built in Phase 3.
+The reasoning engine behind **Pipeline B** (workflow → PRD/handoff). A Python FastAPI service
+that receives a recording's transcript and keyframes, runs them through a LangGraph graph, and
+writes the generated docs. `pipeline/pipeline_watcher.py` POSTs finished sessions to it.
 
 ## Status
-Placeholder. Not yet implemented.
+Implemented. See `app/` for the real service; run it with `./run.sh`.
 
-## Planned shape
+## Shape
 
 ```
-services/langgraph/
+intelligence/
 ├── pyproject.toml
-├── .env.example
-├── README.md (this file)
+├── run.sh                    # starts the FastAPI service (reads intelligence/.env)
 ├── app/
-│   ├── __init__.py
-│   ├── main.py              # FastAPI entrypoint, /intake POST
-│   ├── graph.py             # LangGraph definition
+│   ├── main.py               # FastAPI entrypoint, POST /intake
+│   ├── graph.py              # LangGraph definition
 │   ├── nodes/
-│   │   ├── classify.py      # deal type classification from transcript
-│   │   ├── extract.py       # steps, tools, decisions, data sources
-│   │   ├── compare.py       # diff against workflows/library/
-│   │   ├── generate.py      # PRD.md + handoff-prompt.md
-│   │   └── file.py          # write outputs to disk and return paths
-│   ├── prompts/
-│   │   ├── classify.md
-│   │   ├── extract.md
-│   │   └── generate.md
-│   ├── models.py            # pydantic schemas
-│   └── settings.py          # env-driven config
-└── tests/
-    └── ...
+│   │   ├── classify.py       # classify the recorded workflow's type
+│   │   ├── extract.py        # steps, tools, decisions, data sources
+│   │   ├── grounding.py      # ground the extraction in the real transcript/frames
+│   │   ├── compare.py        # diff against the existing pattern library
+│   │   ├── generate.py       # workflow-map + PRD + handoff
+│   │   └── file_outputs.py   # atomic writes; returns output paths
+│   ├── prompts/{classify,extract,generate}.md
+│   ├── models.py             # pydantic schemas
+│   ├── io.py / settings.py   # session paths + env-driven config
+│   └── pipeline_state.py     # shared run-state contract
+└── tests/                    # pytest suite
 ```
 
-## Contract with n8n
+## Contract
 
-### Request
 `POST http://127.0.0.1:8080/intake`
 
 ```json
 {
-  "session_id": "2026-05-25T14-30-00-self-storage-roundrock",
-  "recording_path": "recordings/2026-05-25T14-30-00-self-storage-roundrock/raw.mp4",
-  "transcript": { "...": "Vowen or mlx-whisper JSON" },
+  "session_id": "2026-01-01T09-00-00-example",
+  "recording_path": "recordings/2026-01-01T09-00-00-example/raw.mp4",
+  "transcript": { "...": "transcript JSON from your dictation provider" },
   "keyframe_paths": ["recordings/.../keyframes/001.jpg", "..."],
-  "context_cue": "self storage, Round Rock, day one"
+  "context_cue": "optional free-text hint"
 }
 ```
 
-### Response
-```json
-{
-  "session_id": "...",
-  "classification": {
-    "deal_type": "self-storage",
-    "sub_type": "acquisition",
-    "confidence": 0.92,
-    "rationale": "..."
-  },
-  "library_path": "workflows/library/<dynamic-path>/",
-  "outputs": {
-    "workflow_map": "recordings/.../workflow-map.md",
-    "prd": "prds/<session-id>/PRD.md",
-    "handoff": "prds/<session-id>/handoff-prompt.md"
-  },
-  "pattern_match": {
-    "status": "new" | "extends",
-    "extends": "workflows/library/<existing-path>/" 
-  }
-}
-```
+Returns the classification plus the written output paths (`workflow-map.md`, `prds/<id>/PRD.md`,
+`prds/<id>/handoff.md`) and whether the run started a new pattern or extended an existing one.
 
-## Hard rules
-- Folder paths under workflows/library/ are derived from the classification result alone. Never hardcoded.
-- All LLM calls use claude-sonnet-4-20250514 via langchain-anthropic.
-- All file writes are atomic: write to tmp, fsync, rename.
-- The service is stateless. State lives in the Homebase repo.
-- No network egress beyond Claude API and Ollama localhost.
+## Rules
+- Pattern-library folder paths are derived from the classification, never hardcoded.
+- LLM model comes from `ANTHROPIC_MODEL` (env); all file writes are atomic (tmp → fsync → rename).
+- Stateless service; durable state lives under `HOMEBASE_ROOT`.
 
-## Required env
-See `.env.example` (added in Phase 3).
+## Required env (`intelligence/.env`)
 - `ANTHROPIC_API_KEY`
+- `ANTHROPIC_MODEL` (default `claude-sonnet-4-6`)
 - `HOMEBASE_ROOT` (default: repo root)
 - `LANGGRAPH_PORT` (default `8080`)

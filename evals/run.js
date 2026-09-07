@@ -259,17 +259,32 @@ function evalLiveSessionNeverProcessed() {
 // implements (confirmed: none of the assembled terms appear verbatim anywhere in this
 // file's own source).
 // ---------------------------------------------------------------------------
-const LEAK_EXEMPT_FILES = new Set(['LICENSE'])
+// Two tiers, because a public Parcyl-credited project DELIBERATELY names Parcyl in its
+// branding, but must never leak a person's name, a former company, or a local home path.
+//
+// PERSONAL terms (a person's name, the former company, any absolute /Users/ home path) are
+// forbidden in every tracked file except LICENSE (whose copyright line is the one exception).
+//
+// The BRAND term (the company name/domain) is forbidden everywhere the PERSONAL rule applies
+// EXCEPT the deliberate branding surfaces: the README credits the project to the company, and
+// LICENSE. Engine code, adapters, and docs still fail on it — a stray brand token there means
+// un-scrubbed source, not intentional branding.
+const PERSONAL_EXEMPT_FILES = new Set(['LICENSE'])
+const BRAND_EXEMPT_FILES = new Set(['LICENSE', 'README.md'])
 
-function buildLeakPattern() {
+function buildPersonalPattern() {
   const terms = [
-    ['p', 'a', 'r', 'c', 'y', 'l'].join(''), // company name
     ['b', 'r', 'a', 'd', 'y'].join(''), // personal first name
-    ['p', 'a', 'r', 'c', 'y', 'l', '.', 'a', 'i'].join(''), // company domain
     ['s', 'y', 'n', 'd', 'n', 'e', 't'].join(''), // former company name
   ]
   const escaped = terms.map((t) => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
   return new RegExp(`(${escaped.join('|')})|(/Users/)`, 'i')
+}
+
+function buildBrandPattern() {
+  // "parcyl" also covers the "parcyl.ai" domain as a substring.
+  const term = ['p', 'a', 'r', 'c', 'y', 'l'].join('')
+  return new RegExp(term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i')
 }
 
 function gitTrackedFiles() {
@@ -283,7 +298,8 @@ function gitTrackedFiles() {
 }
 
 function evalNoIdentifierLeak() {
-  const pattern = buildLeakPattern()
+  const personal = buildPersonalPattern()
+  const brand = buildBrandPattern()
   const violations = []
   let files
   try {
@@ -293,7 +309,6 @@ function evalNoIdentifierLeak() {
   }
 
   for (const rel of files) {
-    if (LEAK_EXEMPT_FILES.has(rel)) continue
     let content
     try {
       content = readFileSync(join(ROOT, rel), 'utf8')
@@ -303,7 +318,11 @@ function evalNoIdentifierLeak() {
     if (content.includes(' ')) continue // binary
 
     const lines = content.split('\n')
-    const hitLine = lines.findIndex((l) => pattern.test(l))
+    const checkPersonal = !PERSONAL_EXEMPT_FILES.has(rel)
+    const checkBrand = !BRAND_EXEMPT_FILES.has(rel)
+    const hitLine = lines.findIndex(
+      (l) => (checkPersonal && personal.test(l)) || (checkBrand && brand.test(l))
+    )
     if (hitLine !== -1) {
       violations.push(`${rel}:${hitLine + 1}`)
     }

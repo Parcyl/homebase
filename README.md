@@ -2,9 +2,9 @@
 
 # homebase
 
-**Record your work once. Get the docs for free.**
+**Build, ship, scale, iterate faster on pure context, captured effortlessly.**
 
-Point your screen recorder and your dictation tool at homebase, do the work while you talk through it, and get a structured bug report or a PRD out the other end — automatically. Bring the tools you already use.
+Your work is the richest context there is, and it usually evaporates. homebase captures it as you go and turns it into developer-ready specs, so your whole team moves faster. This is your engine to build and scale more effectively.
 
 ![homebase architecture](docs/architecture.svg)
 

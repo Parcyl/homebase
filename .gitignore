@@ -1,0 +1,32 @@
+# secrets / env
+.env
+.env.*
+!.env.example
+
+# python / node
+__pycache__/
+*.pyc
+.venv/
+node_modules/
+
+# os
+.DS_Store
+
+# runtime capture output (sessions produce media + transient state)
+sessions/
+recordings/
+*.mp4
+*.wav
+*.m4a
+*.m4s
+*.pid
+*.log
+.chrome-observer/
+
+# harness build tooling — NOT part of the shipped product
+/.claude/
+/scripts/
+/evals/
+/harness.config.json
+/harness.state.*
+/notes/

@@ -16,7 +16,7 @@ Your work is the richest context there is, and it usually evaporates. homebase c
 
 The most valuable record of how software actually works, and everything wrong with it, happens while someone is *using* it and talking out loud. A QA pass, a walkthrough, a bug bash, a "let me show you what's broken" screen share.
 
-Then it evaporates. Someone has to stop, rewind the recording, and hand-write the bug tickets, the repro steps, the PRD, the handoff. So most of it never gets written down, and the signal is lost.
+Then comes the tedious work of piecing it all together: copying and pasting context, collecting console logs, taking screenshots, and walking an AI assistant through what happened. Even with tools like Claude in Chrome, you're still manually reconstructing an experience you just had, and after all that effort, critical details still get lost.
 
 ## What homebase does
 

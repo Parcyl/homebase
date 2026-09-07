@@ -2,7 +2,7 @@
 
 # homebase
 
-**Build, ship, scale, iterate faster on pure context, captured effortlessly.**
+**Build. Ship. Scale. Stop documenting context. Start building with it.**
 
 Your work is the richest context there is, and it usually evaporates. homebase captures it as you go and turns it into developer-ready specs, so your whole team moves faster. This is your engine to build and scale more effectively.
 

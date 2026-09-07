@@ -27,7 +27,6 @@ recordings/
 # harness build tooling — NOT part of the shipped product
 /.claude/
 /scripts/
-/evals/
 /agents/
 /harness.config.json
 /harness.state.*

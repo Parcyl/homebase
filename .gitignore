@@ -27,6 +27,7 @@ recordings/
 /.claude/
 /scripts/
 /evals/
+/agents/
 /harness.config.json
 /harness.state.*
 /notes/

@@ -24,7 +24,7 @@ recordings/
 .chrome-observer/
 /doc-generator-state.json
 
-# harness build tooling — NOT part of the shipped product
+# harness build tooling, NOT part of the shipped product
 /.claude/
 /scripts/
 /agents/

@@ -4,9 +4,9 @@ Work a live session in your app and capture everything, with full context.
 
 This ties together two capture layers:
 
-1. **Screen + voice** — homebase's own recorder + dictation seams (see
+1. **Screen + voice**: homebase's own recorder + dictation seams (see
    `providers/recorder/`, `providers/transcript/`, `pipeline/record_session.py`).
-2. **Browser technical layer** — `chrome_observer.py`, a read-only Chrome co-observer that
+2. **Browser technical layer**: `chrome_observer.py`, a read-only Chrome co-observer that
    logs every JS error, failed API call, and route change as you click. Attaches only to
    tabs matching `$OBSERVER_URL_FILTER` (default: the host of `$OBSERVER_URL`).
 

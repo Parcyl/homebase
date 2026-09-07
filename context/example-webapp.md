@@ -1,4 +1,4 @@
-# Your Web App — Product Context (example)
+# Your Web App: Product Context (example)
 
 This is the ground truth about your app's layout, paired with `example-webapp.json`. The
 capture pipeline feeds this into every Claude call so each bug is filed to the correct
@@ -11,7 +11,7 @@ Replace this paragraph with a short description of the product being walked thro
 it does, who narrates the sessions, and why (dogfooding, QA pass, onboarding a new
 teammate, pre-release review).
 
-## The layout — three zones
+## The layout: three zones
 
 ### Frontend (`zone: frontend`)
 The client-side application: UI, layout, client-side state, rendering. Replace with your
@@ -38,7 +38,7 @@ dropped.
 
 ## Severity scale
 
-- `blocker` — cannot ship with this; it breaks a core flow.
-- `high` — visibly broken or wrong, needs fixing before release.
-- `medium` — real bug, not release-blocking.
-- `low` — polish, copy, minor visual.
+- `blocker`: cannot ship with this; it breaks a core flow.
+- `high`: visibly broken or wrong, needs fixing before release.
+- `medium`: real bug, not release-blocking.
+- `low`: polish, copy, minor visual.

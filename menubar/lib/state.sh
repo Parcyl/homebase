@@ -157,11 +157,15 @@ PY
 # Newest file named "$2" anywhere under directory "$1", or empty string.
 # Portable across BSD stat (macOS: -f "%m") and GNU stat (Linux: -c "%Y").
 _latest_by_mtime() {
-    local root="$1" name="$2" best_t=-1 best_p="" t p
+    local root="$1" name="$2" best_t=-1 best_p="" t p gnu=0
+    # GNU stat (Linux) supports --version and formats with -c "%Y"; BSD stat (macOS)
+    # rejects --version and formats with -f "%m". Detect once; do NOT rely on -f failing
+    # on GNU, because GNU treats -f as filesystem mode and exits 0 with the wrong output.
+    stat --version >/dev/null 2>&1 && gnu=1
     while IFS= read -r p; do
-        t=$(stat -f "%m" "$p" 2>/dev/null || stat -c "%Y" "$p" 2>/dev/null)
-        [ -n "$t" ] || continue
-        if [ "$t" -gt "$best_t" ] 2>/dev/null; then best_t="$t"; best_p="$p"; fi
+        if [ "$gnu" = 1 ]; then t=$(stat -c "%Y" "$p" 2>/dev/null); else t=$(stat -f "%m" "$p" 2>/dev/null); fi
+        case "$t" in ''|*[!0-9]*) continue ;; esac   # only accept an integer epoch mtime
+        if [ "$t" -gt "$best_t" ]; then best_t="$t"; best_p="$p"; fi
     done < <(find "$root" -name "$name" -type f 2>/dev/null)
     [ -n "$best_p" ] && printf '%s\n' "$best_p"
 }

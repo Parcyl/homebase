@@ -679,13 +679,16 @@ STATE_FILE = "doc-generator-state.json"
 
 
 def update_state(homebase: Path, stage: str, session_id: str | None = None, **extra: Any) -> None:
-    """Own state file for this processor, at <homebase>/agents/doc-generator-state.json.
+    """Own state file for this processor, at <homebase>/doc-generator-state.json.
 
     Kept separate from intelligence/'s shared agents/pipeline-state.json contract (that
     spine tracks the deal-recording pipeline; wiring the two together is future work, not
-    part of this seam).
+    part of this seam). Deliberately NOT under <homebase>/agents/: that path is this repo's
+    own build-harness directory when HOMEBASE_ROOT defaults to the repo root (see
+    .gitignore), and colliding a shipped runtime file with harness tooling is exactly the
+    kind of odd path that trips up a fresh clone.
     """
-    path = homebase / "agents" / STATE_FILE
+    path = homebase / STATE_FILE
     path.parent.mkdir(parents=True, exist_ok=True)
     current: dict[str, Any] = {}
     if path.exists():

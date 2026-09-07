@@ -36,3 +36,10 @@ def test_start_stop_are_noops(tmp_path):
     recorder.start(tmp_path)
     recorder.stop(tmp_path)
     assert list(tmp_path.iterdir()) == []
+
+
+def test_is_running_is_none_not_false():
+    """No process to check -- None ('not applicable'), never False ('not running'), so the
+    healthcheck knows to skip the check rather than block every session on it."""
+    recorder = FileRecorder()
+    assert recorder.is_running() is None

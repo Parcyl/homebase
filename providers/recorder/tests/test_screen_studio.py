@@ -78,3 +78,21 @@ def test_applescript_files_exist_next_to_module():
     from providers.recorder.screen_studio import START_SCRIPT, STOP_SCRIPT
     assert START_SCRIPT.exists()
     assert STOP_SCRIPT.exists()
+
+
+def test_is_running_true_when_pgrep_finds_a_pid():
+    recorder = ScreenStudioRecorder(runner=lambda *_: None, pgrep=lambda pattern: [123])
+    assert recorder.is_running() is True
+
+
+def test_is_running_false_when_pgrep_finds_nothing():
+    recorder = ScreenStudioRecorder(runner=lambda *_: None, pgrep=lambda pattern: [])
+    assert recorder.is_running() is False
+
+
+def test_is_running_searches_for_screen_studio_by_name():
+    seen = []
+    recorder = ScreenStudioRecorder(runner=lambda *_: None,
+                                    pgrep=lambda pattern: seen.append(pattern) or [])
+    recorder.is_running()
+    assert seen == ["Screen Studio"]

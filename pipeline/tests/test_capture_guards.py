@@ -2,8 +2,10 @@
 monitor's pure alert decision).
 
 The dictation-provider-specific readiness checks and window selection now live in, and are
-tested by, providers/transcript/tests/ -- these tests exercise what's left in pipeline/:
-capture_healthcheck.py's aggregation and capture_liveness_monitor.py's assess().
+tested by, providers/transcript/tests/; the recorder-specific liveness check (e.g. Screen
+Studio's pgrep) lives in, and is tested by, providers/recorder/tests/ -- these tests exercise
+what's left in pipeline/: capture_healthcheck.py's aggregation of both seams and
+capture_liveness_monitor.py's assess().
 """
 from __future__ import annotations
 
@@ -28,21 +30,83 @@ class _StubProvider:
         return self._health
 
 
-# ---------- capture_healthcheck.run_checks: provider issues + the (still-hardcoded)
-# ---------- Screen Studio check are aggregated together ----------
+class _StubRecorder:
+    """A RecorderAdapter stand-in with a canned is_running() result, for testing the
+    healthcheck's aggregation without a real recorder adapter."""
+
+    def __init__(self, name: str, running: bool | None = None):
+        self.name = name
+        self._running = running
+
+    def start(self, session_dir):
+        pass
+
+    def stop(self, session_dir):
+        pass
+
+    def resolve_master(self, session_start_epoch, session_dir):
+        return None
+
+    def is_running(self) -> bool | None:
+        return self._running
+
+
+class _BareStubRecorder:
+    """A RecorderAdapter stand-in with NO is_running() at all -- a third-party recorder
+    that never opted into the liveness seam. run_checks must skip it, not crash."""
+
+    def __init__(self, name: str):
+        self.name = name
+
+    def start(self, session_dir):
+        pass
+
+    def stop(self, session_dir):
+        pass
+
+    def resolve_master(self, session_start_epoch, session_dir):
+        return None
+
+
+# ---------- capture_healthcheck.run_checks: provider issues + the recorder's own liveness
+# ---------- check (if it has one) are aggregated together ----------
 
 def test_run_checks_surfaces_provider_issues():
     issue = HealthIssue("provider_running", False, hard=True, message="provider is not running")
     provider = _StubProvider(ProviderHealth(name="stub", healthy=False, issues=[issue]))
-    results = hc.run_checks(provider)
+    recorder = _StubRecorder("stub-recorder", running=True)
+    results = hc.run_checks(provider, recorder)
     assert issue in results
 
 
-def test_run_checks_always_appends_screen_studio_check():
+def test_run_checks_appends_recorder_liveness_when_supported():
     provider = _StubProvider(ProviderHealth(name="file", healthy=True, issues=[]))
-    results = hc.run_checks(provider)
+    recorder = _StubRecorder("stub-recorder", running=False)
+    results = hc.run_checks(provider, recorder)
     names = [r.name for r in results]
-    assert "screen_studio_running" in names
+    assert "stub-recorder_running" in names
+    issue = next(r for r in results if r.name == "stub-recorder_running")
+    assert not issue.passed and issue.blocking
+
+
+def test_run_checks_skips_recorder_check_when_not_applicable():
+    """A recorder with nothing to poll (e.g. FileRecorder) returns None from is_running(),
+    which means 'not applicable', not 'not running' -- the check must be skipped, not
+    treated as a failure."""
+    provider = _StubProvider(ProviderHealth(name="file", healthy=True, issues=[]))
+    recorder = _StubRecorder("file", running=None)
+    results = hc.run_checks(provider, recorder)
+    names = [r.name for r in results]
+    assert "file_running" not in names
+
+
+def test_run_checks_skips_recorder_with_no_liveness_concept():
+    """A recorder that doesn't implement is_running() at all is skipped, not crashed on."""
+    provider = _StubProvider(ProviderHealth(name="file", healthy=True, issues=[]))
+    recorder = _BareStubRecorder("bare-recorder")
+    results = hc.run_checks(provider, recorder)
+    names = [r.name for r in results]
+    assert "bare-recorder_running" not in names
 
 
 def test_render_text_marks_pass_or_fail():

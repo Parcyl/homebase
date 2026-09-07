@@ -373,7 +373,7 @@ def test_process_session_end_to_end(tmp_path: Path):
     assert captured["capture_tool"]["name"] == "submit_capture"
     # the context_config's product name reached the system prompt, not a hardcoded one
     assert cfg.product_name in captured["system"]
-    state = json.loads((homebase / "agents" / dg.STATE_FILE).read_text())
+    state = json.loads((homebase / dg.STATE_FILE).read_text())
     assert state["stage"] == "complete"
 
 

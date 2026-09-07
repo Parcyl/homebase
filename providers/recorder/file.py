@@ -31,3 +31,9 @@ class FileRecorder:
         if not mp4s:
             return None
         return max(mp4s, key=lambda p: p.stat().st_size)
+
+    def is_running(self) -> None:
+        """No process to check -- returns None ("not applicable"), not False ("not
+        running"), so the pre-record healthcheck knows to skip this check entirely rather
+        than block every session on a recorder that was never meant to be polled."""
+        return None

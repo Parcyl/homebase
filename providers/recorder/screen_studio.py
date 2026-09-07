@@ -27,6 +27,15 @@ from typing import Callable
 
 _HERE = Path(__file__).resolve().parent
 
+
+def _pgrep(pattern: str) -> list[int]:
+    try:
+        r = subprocess.run(["pgrep", "-f", pattern], capture_output=True,
+                            text=True, timeout=3, check=False)
+        return [int(x) for x in r.stdout.split()] if r.returncode == 0 else []
+    except (subprocess.TimeoutExpired, FileNotFoundError, OSError, ValueError):
+        return []
+
 DEFAULT_SCREEN_STUDIO_DIR = Path(os.environ.get(
     "SCREEN_STUDIO_DIR", str(Path.home() / "Documents" / "Screen Studio")))
 # A Screen Studio bundle's recording start ~= the session's start, within this many
@@ -85,7 +94,8 @@ def _run_osascript(script: Path) -> None:
 class ScreenStudioRecorder:
     """Drives Screen Studio via AppleScript keystrokes. macOS only.
 
-    `runner` is injectable so tests never need a real Screen Studio install or osascript.
+    `runner` and `pgrep` are injectable so tests never need a real Screen Studio install,
+    osascript, or pgrep.
     """
 
     name = "screen-studio"
@@ -96,10 +106,12 @@ class ScreenStudioRecorder:
         ss_dir: Path | None = None,
         tolerance_s: float | None = None,
         runner: Callable[[Path], None] = _run_osascript,
+        pgrep: Callable[[str], list[int]] = _pgrep,
     ) -> None:
         self.ss_dir = ss_dir or DEFAULT_SCREEN_STUDIO_DIR
         self.tolerance_s = DEFAULT_MATCH_TOLERANCE_S if tolerance_s is None else tolerance_s
         self._run = runner
+        self._pgrep_fn = pgrep
 
     def start(self, session_dir: Path) -> None:
         self._run(START_SCRIPT)
@@ -110,3 +122,13 @@ class ScreenStudioRecorder:
     def resolve_master(self, session_start_epoch: float, session_dir: Path) -> Path | None:
         return find_screenstudio_master(
             session_start_epoch, ss_dir=self.ss_dir, tolerance_s=self.tolerance_s)
+
+    def is_running(self) -> bool:
+        """Best-effort: is the Screen Studio process currently up.
+
+        This is the pre-record healthcheck's cheap first gate (see
+        pipeline/capture_healthcheck.py), NOT a capture-liveness guarantee -- a process can
+        stay running while its capture is dead, the same trap providers/transcript/vowen.py
+        documents for the dictation side. Injectable via `pgrep` for tests.
+        """
+        return bool(self._pgrep_fn("Screen Studio"))

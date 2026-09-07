@@ -5,7 +5,9 @@ Runs BEFORE a session starts. Its job is to block the obvious failure modes:
   - the dictation provider is not ready (delegated to provider.health(), see
     providers/transcript/ -- e.g. the vowen adapter checks the process is running and
     hasn't crashed since launch)
-  - the screen recorder is not running
+  - the screen recorder is not running (delegated to recorder.is_running(), see
+    providers/recorder/ -- optional: a recorder with no process to check, e.g. FileRecorder,
+    returns None and the check is skipped rather than blocking every session on it)
 
 HONEST LIMITATION: a pre-record check CANNOT reliably detect a *silent hang* (a dictation
 tool running but internally frozen). An idle-but-healthy tool and a frozen one look
@@ -15,16 +17,11 @@ grace window. This script is the cheap first gate, not the whole defense.
 
 Exit code 0 = safe to start. Exit code 1 = a hard check failed; do not start.
 stdout = JSON for machine parsing. stderr = human-readable status.
-
-NOTE: the "screen recorder running" check below is still hardcoded to Screen Studio.
-RecorderAdapter (the recorder-side seam, not yet built) will replace it the same way
-providers/transcript/ replaced the dictation checks here -- see notes/bmad/homebase-oss/plan.md S4.
 """
 
 from __future__ import annotations
 
 import json
-import subprocess
 import sys
 from pathlib import Path
 
@@ -33,27 +30,25 @@ _REPO_ROOT = _HERE.parent
 if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
 
+from providers.recorder import get_recorder  # noqa: E402
 from providers.transcript import HealthIssue, get_provider  # noqa: E402
 
 
-def _pgrep(pattern: str) -> list[int]:
-    try:
-        r = subprocess.run(["pgrep", "-f", pattern], capture_output=True,
-                           text=True, timeout=3, check=False)
-        return [int(x) for x in r.stdout.split()] if r.returncode == 0 else []
-    except (subprocess.TimeoutExpired, FileNotFoundError, OSError, ValueError):
-        return []
-
-
-def run_checks(provider=None) -> list[HealthIssue]:
-    """Dictation-provider readiness (via provider.health()) plus the still-hardcoded
-    recorder check (see module docstring)."""
+def run_checks(provider=None, recorder=None) -> list[HealthIssue]:
+    """Dictation-provider readiness (via provider.health()) plus the recorder's own
+    liveness check, if it has one (via the optional recorder.is_running())."""
     provider = provider or get_provider()
+    recorder = recorder or get_recorder()
     results = list(provider.health().issues)
 
-    ss_pids = _pgrep("Screen Studio")
-    results.append(HealthIssue("screen_studio_running", bool(ss_pids), hard=True,
-                               message="" if ss_pids else "Screen Studio is not running"))
+    is_running = getattr(recorder, "is_running", None)
+    if callable(is_running):
+        running = is_running()
+        if running is not None:  # None = "not applicable", not "not running" -- skip it
+            results.append(HealthIssue(
+                f"{recorder.name}_running", running, hard=True,
+                message="" if running else f"{recorder.name} is not running",
+            ))
     return results
 
 

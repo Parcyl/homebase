@@ -10,13 +10,21 @@ Point your screen recorder and your dictation tool at homebase, do the work whil
 
 <br/>
 
-![what homebase produces — one session's real output tree: 49 developer-ready bug cards, 48 timestamped screenshots, and the stitched DIGEST / PRD / TEAM_BRIEF docs](docs/output-tree.png)
+![DIGEST.md, triage — 49 bugs sorted by zone and severity, each with what broke, expected behavior, a suggested fix, and a link to the screenshot at its timecode](docs/digest-1-triage.png)
+
+<sub><b>What comes out — the triage.</b> One session's <code>DIGEST.md</code>: 49 bugs sorted by zone and severity, each linked to the screenshot at its timecode. <i>(Click any image to enlarge.)</i></sub>
 
 <br/>
 
-![a slice of a real DIGEST.md — a prioritized, zone-partitioned worklist where every bug is developer-ready and linked to the screenshot at its timecode](docs/digest-example.png)
+![DIGEST.md, workflow-connection map — an auto-generated map of how the product's panels and screens connect, with a panel-layout diagram and step-by-step flows](docs/digest-2-workflow-map.png)
 
-<sub>A slice of one real session's `DIGEST.md`: 49 triaged bugs, each with what broke, expected behavior, a suggested fix, and a link to the screenshot at its timecode.</sub>
+<sub><b>The workflow-connection map.</b> homebase also reconstructs how the product's panels and screens actually connect, as a diagram plus step-by-step flows.</sub>
+
+<br/>
+
+![DIGEST.md, key connection gaps — a table of every broken or unwired path the walkthrough surfaced](docs/digest-3-connection-gaps.png)
+
+<sub><b>The connection gaps.</b> Every broken or unwired path the walkthrough surfaced, in one table developers can work straight off.</sub>
 
 </div>
 

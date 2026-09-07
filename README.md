@@ -6,7 +6,7 @@
 
 Your work is the richest context there is, and it usually evaporates. homebase captures it as you go and turns it into developer-ready specs, so your whole team moves faster. This is your engine to build and scale more effectively.
 
-![homebase architecture](docs/architecture.svg)
+![homebase architecture](docs/architecture.png)
 
 </div>
 

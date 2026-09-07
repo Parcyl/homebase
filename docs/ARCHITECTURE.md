@@ -261,7 +261,6 @@ read (`intelligence/app/models.py:Grounding`, `IntegrationStatus`). The response
 (`IntakeResponse`) carries `classification`, `outputs` (the four written file paths),
 `pattern_match` (new vs. extends an existing library entry), and `low_confidence`.
 
-`intelligence/README.md` describes an earlier n8n-based design and says the service is "not
-yet implemented", that's stale; the FastAPI/LangGraph service described above is real and
-ported (`intelligence/app/{main,graph,models,settings,io,pipeline_state}.py` +
+The FastAPI/LangGraph service described above is real and ported
+(`intelligence/app/{main,graph,models,settings,io,pipeline_state}.py` +
 `nodes/{classify,extract,grounding,compare,generate,file_outputs}.py`).

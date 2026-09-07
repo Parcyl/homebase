@@ -14,13 +14,21 @@ source .venv/bin/activate
 pip install -q --upgrade pip
 pip install -q -e ".[dev]"
 
-if [ ! -f ".env" ]; then
-  echo "ERROR: .env missing. Copy .env.example to .env and fill in ANTHROPIC_API_KEY."
+# Prefer a local intelligence/.env, but fall back to the repo-root .env so a fresh clone
+# needs only ONE .env (matching the "one file, both flows" design). Root env.example is the
+# template a user copies to the repo-root .env.
+if [ -f ".env" ]; then
+  ENV_FILE=".env"
+elif [ -f "../.env" ]; then
+  ENV_FILE="../.env"
+else
+  echo "ERROR: no .env found. Copy the repo-root template and fill in ANTHROPIC_API_KEY:"
+  echo "  cp ../env.example ../.env"
   exit 1
 fi
 
 # shellcheck disable=SC1091
-set -a; source .env; set +a
+set -a; source "$ENV_FILE"; set +a
 
 # uvicorn requires lowercase log levels (info, warning, error, ...).
 # The app code uses Python's logging module with uppercase names, so LOG_LEVEL in

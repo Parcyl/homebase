@@ -45,7 +45,7 @@ intelligence/
 ```
 
 Returns the classification plus the written output paths (`workflow-map.md`, `prds/<id>/PRD.md`,
-`prds/<id>/handoff.md`) and whether the run started a new pattern or extended an existing one.
+`prds/<id>/handoff-prompt.md`) and whether the run started a new pattern or extended an existing one.
 
 ## Rules
 - Pattern-library folder paths are derived from the classification, never hardcoded.

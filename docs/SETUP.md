@@ -23,6 +23,9 @@ Optional, only if you use the corresponding adapter:
 - `mlx-whisper` (`pip install mlx-whisper`), last-resort transcription fallback if no
   transcript provider produced anything; used by both `pipeline_watcher.py:ensure_transcript`
   and `doc_generator.py`'s backup-audio path. Only relevant on Apple Silicon.
+- `websocket-client` (`pip install websocket-client`), only for the optional `observer/`
+  read-only Chrome co-observer. `observer/capture_start.sh` checks for it and prints the
+  exact fix before launching, so you only need it if you use the observer.
 
 ## 2. Install
 

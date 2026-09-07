@@ -1,7 +1,7 @@
 """Pipeline state contract.
 
 A single JSON file at HOMEBASE_ROOT/agents/pipeline-state.json is the source of
-truth for the live pipeline stage. Recording scripts, LangGraph nodes, n8n,
+truth for the live pipeline stage. Recording scripts, LangGraph nodes,
 and the menu bar all read or write through this contract.
 
 Writes are atomic (tmp + rename + fsync). Reads tolerate a missing file

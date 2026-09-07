@@ -154,29 +154,29 @@ if callable(stop):
 PY
 }
 
+# Newest file named "$2" anywhere under directory "$1", or empty string.
+# Portable across BSD stat (macOS: -f "%m") and GNU stat (Linux: -c "%Y").
+_latest_by_mtime() {
+    local root="$1" name="$2" best_t=-1 best_p="" t p
+    while IFS= read -r p; do
+        t=$(stat -f "%m" "$p" 2>/dev/null || stat -c "%Y" "$p" 2>/dev/null)
+        [ -n "$t" ] || continue
+        if [ "$t" -gt "$best_t" ] 2>/dev/null; then best_t="$t"; best_p="$p"; fi
+    done < <(find "$root" -name "$name" -type f 2>/dev/null)
+    [ -n "$best_p" ] && printf '%s\n' "$best_p"
+}
+
 # Returns latest PRD.md path under prds/, or empty string
 latest_prd() {
-    find "$HOMEBASE_ROOT/prds" -name PRD.md -type f 2>/dev/null \
-        | xargs -I{} stat -f "%m %N" {} 2>/dev/null \
-        | sort -nr \
-        | head -n1 \
-        | awk '{$1=""; sub(/^ /, ""); print}'
+    _latest_by_mtime "$HOMEBASE_ROOT/prds" PRD.md
 }
 
 latest_handoff() {
-    find "$HOMEBASE_ROOT/prds" -name handoff-prompt.md -type f 2>/dev/null \
-        | xargs -I{} stat -f "%m %N" {} 2>/dev/null \
-        | sort -nr \
-        | head -n1 \
-        | awk '{$1=""; sub(/^ /, ""); print}'
+    _latest_by_mtime "$HOMEBASE_ROOT/prds" handoff-prompt.md
 }
 
 latest_digest() {
-    find "$HOMEBASE_ROOT/recordings" -name DIGEST.md -type f 2>/dev/null \
-        | xargs -I{} stat -f "%m %N" {} 2>/dev/null \
-        | sort -nr \
-        | head -n1 \
-        | awk '{$1=""; sub(/^ /, ""); print}'
+    _latest_by_mtime "$HOMEBASE_ROOT/recordings" DIGEST.md
 }
 
 run_osascript() {

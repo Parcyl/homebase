@@ -1,0 +1,10 @@
+# Runtime dependencies for the pipeline/ layer (Pipeline A: doc_generator.py + the capture
+# scripts). Install into whichever python3 you point PYTHON_BIN at:  pip install -r requirements.txt
+#
+# Pipeline B (intelligence/) manages its own dependencies via intelligence/pyproject.toml,
+# installed automatically by intelligence/run.sh, so nothing for it is listed here.
+anthropic>=0.40
+
+# Optional, feature/platform specific (uncomment if you use them):
+# mlx-whisper       # last-resort transcription fallback; Apple Silicon only
+# websocket-client  # only for the optional observer/ read-only Chrome co-observer

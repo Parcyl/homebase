@@ -31,3 +31,29 @@ jobs:
 
       - name: Run homebase invariant evals
         run: node evals/run.js
+
+  python-tests:
+    name: Python tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install pipeline-layer deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt -r requirements-dev.txt
+
+      - name: Run pipeline + providers + menubar tests
+        run: python -m pytest pipeline/tests providers menubar/tests -q
+
+      - name: Install the intelligence spine (Pipeline B)
+        working-directory: intelligence
+        run: pip install -e ".[dev]"
+
+      - name: Run intelligence tests
+        working-directory: intelligence
+        run: python -m pytest tests -q

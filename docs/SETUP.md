@@ -54,8 +54,11 @@ Python dependencies are split per component, not managed by one root install:
 # pipeline/ (Pipeline A's doc_generator.py, and mlx-whisper fallback) has no venv of its
 # own and is run as `python3 pipeline/<script>.py` directly. Install what it needs into
 # whichever python3 you point PYTHON_BIN at:
-pip install anthropic          # required for pipeline/doc_generator.py
-pip install pytest             # optional, only if you want to run pipeline/providers/menubar tests
+pip install -r requirements.txt        # runtime deps for pipeline/ (anthropic)
+pip install -r requirements-dev.txt    # optional, adds pytest to run pipeline/providers/menubar tests
+# Optional extras (uncomment in requirements.txt or install directly):
+#   pip install mlx-whisper       # transcription fallback, Apple Silicon only
+#   pip install websocket-client  # only for the optional observer/ Chrome co-observer
 ```
 
 ## 3. Choose your recorder and dictation provider

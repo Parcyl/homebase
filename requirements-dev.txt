@@ -1,0 +1,5 @@
+# Dev/test dependencies for the pipeline/ layer test suites
+# (pipeline/tests, providers/**/tests, menubar/tests). Run:  pip install -r requirements-dev.txt
+# Pipeline B's dev deps come from intelligence/pyproject.toml's [dev] extra.
+-r requirements.txt
+pytest>=8

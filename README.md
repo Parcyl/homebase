@@ -8,6 +8,8 @@ Point your screen recorder and your dictation tool at homebase, do the work whil
 
 ![homebase architecture](docs/architecture.svg)
 
+![what homebase produces — a cross-referenced document set](docs/output-tree.svg)
+
 </div>
 
 ---

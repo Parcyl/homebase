@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 720" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" role="img" aria-label="homebase output: a session folder of timestamped screenshots, per-bug cards that cite them, and stitched DIGEST/PRD/TEAM_BRIEF docs, plus Pipeline B's PRD and Claude Code handoff">
+  <defs>
+    <marker id="oarrowA" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#3ecf8e"/>
+    </marker>
+  </defs>
+  <style>
+    .mono { font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; }
+  </style>
+
+  <rect x="0" y="0" width="1200" height="720" rx="18" fill="#0f1720"/>
+  <rect x="0.5" y="0.5" width="1199" height="719" rx="18" fill="none" stroke="#233240" stroke-width="1"/>
+
+  <!-- header -->
+  <text x="48" y="66" fill="#ffffff" font-size="30" font-weight="700" letter-spacing="-0.4">What comes out</text>
+  <text x="49" y="94" fill="#8b98a5" font-size="15">One recording in. A cross-referenced, ready-to-ship document set on disk — no hand-writing.</text>
+  <line x1="48" y1="116" x2="1152" y2="116" stroke="#1c2836" stroke-width="1"/>
+
+  <!-- LEFT: Pipeline A session tree -->
+  <text x="48" y="156" fill="#3ecf8e" font-size="14" font-weight="700" letter-spacing="0.3">PIPELINE A · walkthrough → bug digest</text>
+  <g class="mono" font-size="14.5">
+    <text x="48" y="190" fill="#e6edf3" font-weight="700">recordings/2026-01-01T09-00-00-example/</text>
+    <text x="64" y="218" fill="#6b7c8b">├─ raw.mp4</text>
+    <text x="360" y="218" fill="#46586a" font-size="12">the recording (your recorder)</text>
+    <text x="64" y="244" fill="#6b7c8b">├─ transcript.json</text>
+    <text x="360" y="244" fill="#46586a" font-size="12">your narration (your dictation)</text>
+    <text x="64" y="270" fill="#6b7c8b">├─ session.json</text>
+    <text x="64" y="300" fill="#e6edf3">├─ screenshots/</text>
+    <text x="88" y="326" fill="#3ecf8e">│   ├─ shot_0001.jpg</text>
+    <text x="300" y="326" fill="#9fb0bf">00:30</text>
+    <text x="88" y="352" fill="#3ecf8e">│   └─ shot_0002.jpg</text>
+    <text x="300" y="352" fill="#9fb0bf">01:12</text>
+    <text x="64" y="382" fill="#e6edf3">├─ bugs/</text>
+    <text x="88" y="408" fill="#3ecf8e">│   ├─ frontend-01-save-button-does-nothing.md</text>
+    <text x="88" y="434" fill="#3ecf8e">│   └─ backend-01-submit-returns-500.md</text>
+    <text x="64" y="464" fill="#cdd8e1">├─ DIGEST.md</text>
+    <text x="360" y="464" fill="#46586a" font-size="12">prioritized worklist, per zone</text>
+    <text x="64" y="490" fill="#cdd8e1">├─ INDEX.md</text>
+    <text x="64" y="516" fill="#cdd8e1">├─ PRD.md</text>
+    <text x="64" y="542" fill="#cdd8e1">├─ workflow-map.md</text>
+    <text x="64" y="568" fill="#cdd8e1">└─ TEAM_BRIEF.md</text>
+    <text x="360" y="568" fill="#46586a" font-size="12">one self-contained hand-off</text>
+  </g>
+
+  <!-- RIGHT TOP: the actual cross-reference -->
+  <text x="648" y="156" fill="#9fb0bf" font-size="14" font-weight="700" letter-spacing="0.3">IT ALL CROSS-REFERENCES ITSELF</text>
+  <rect x="648" y="176" width="504" height="150" rx="10" fill="#0d1620" stroke="#2b3b4a" stroke-width="1"/>
+  <text x="668" y="204" fill="#7c8a98" font-size="12.5">Inside a bug card — the model pinned the moment,</text>
+  <text x="668" y="222" fill="#7c8a98" font-size="12.5">so the card links the screenshot at its timecode:</text>
+  <g class="mono" font-size="13">
+    <text x="668" y="252" fill="#cdd8e1"># BE-01 — Submit returns 500</text>
+    <text x="668" y="276" fill="#cdd8e1">- <tspan fill="#9fb0bf">Timecode:</tspan> <tspan fill="#3ecf8e" font-weight="700">01:12</tspan></text>
+    <text x="668" y="300" fill="#cdd8e1">![shot_0002 @ <tspan fill="#3ecf8e" font-weight="700">01:12</tspan>](<tspan fill="#3ecf8e">../screenshots/shot_0002.jpg</tspan>)</text>
+  </g>
+
+  <!-- arrow from the card snippet back to the screenshot row -->
+  <path d="M648 300 C 560 300, 560 340, 300 340" fill="none" stroke="#3ecf8e" stroke-width="1.6" stroke-dasharray="4 4" marker-end="url(#oarrowA)" opacity="0.8"/>
+
+  <text x="648" y="360" fill="#7c8a98" font-size="12.5">DIGEST.md and TEAM_BRIEF.md stitch every card,</text>
+  <text x="648" y="378" fill="#7c8a98" font-size="12.5">the workflow map, and the PRD into one doc.</text>
+
+  <!-- RIGHT BOTTOM: Pipeline B -->
+  <text x="648" y="452" fill="#a78bfa" font-size="14" font-weight="700" letter-spacing="0.3">PIPELINE B · workflow → PRD + handoff</text>
+  <rect x="648" y="472" width="504" height="176" rx="10" fill="#141126" stroke="#3a3357" stroke-width="1"/>
+  <g class="mono" font-size="14.5">
+    <text x="672" y="504" fill="#e6edf3">prds/2026-01-01T09-00-00-example/</text>
+    <text x="688" y="530" fill="#c4b6f5">├─ PRD.md</text>
+    <text x="688" y="556" fill="#c4b6f5">└─ handoff-prompt.md</text>
+    <text x="900" y="556" fill="#6a5f8c" font-size="12">paste into Claude Code</text>
+    <text x="672" y="592" fill="#e6edf3">workflows/library/&lt;type&gt;/</text>
+    <text x="688" y="618" fill="#c4b6f5">└─ pattern.md</text>
+    <text x="900" y="618" fill="#6a5f8c" font-size="12">reusable, grows over time</text>
+  </g>
+
+  <!-- footer -->
+  <text x="48" y="694" fill="#5b6b7b" font-size="12.5">Real output from a run against the bundled example context. Filenames, timecodes, and the screenshot link are exactly what homebase writes.</text>
+</svg>

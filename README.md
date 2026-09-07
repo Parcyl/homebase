@@ -36,21 +36,21 @@ You record your screen and narrate. homebase watches for the finished session, p
 
 Real output from one session. *(Click any image to enlarge and read the detail.)*
 
-### Every bug, triaged and reproducible
+<h3 align="center">Every bug, triaged and reproducible</h3>
 
-One session's `DIGEST.md`: 49 bugs sorted by zone and severity, each with repro steps and a link to the screenshot at its exact timecode.
+<p align="center">One session's <code>DIGEST.md</code>: 49 bugs sorted by zone and severity, each with repro steps and a link to the screenshot at its exact timecode.</p>
 
 ![DIGEST.md triage: 49 bugs sorted by zone and severity, each with what broke, expected behavior, a suggested fix, and a link to the screenshot at its timecode](docs/digest-1-triage.png)
 
-### See how every screen connects
+<h3 align="center">See how every screen connects</h3>
 
-homebase also reconstructs how your product's panels and screens actually connect, as a clear diagram plus step-by-step flows.
+<p align="center">homebase also reconstructs how your product's panels and screens actually connect, as a clear diagram plus step-by-step flows.</p>
 
 ![DIGEST.md workflow-connection map: an auto-generated map of how the product's panels and screens connect, with a panel-layout diagram and step-by-step flows](docs/digest-2-workflow-map.png)
 
-### Catch every broken path
+<h3 align="center">Catch every broken path</h3>
 
-Every broken or unwired connection the walkthrough surfaced, in one table your team can work straight off.
+<p align="center">Every broken or unwired connection the walkthrough surfaced, in one table your team can work straight off.</p>
 
 ![DIGEST.md key connection gaps: a table of every broken or unwired path the walkthrough surfaced](docs/digest-3-connection-gaps.png)
 

@@ -17,10 +17,10 @@ import doc_generator as dg
 
 def _cfg(*, zones=None, severities=("blocker", "high", "medium", "low")) -> dg.ContextConfig:
     zones = zones or (
-        dg.Zone(code="NB", key="notebook", label="Right — Notebook"),
-        dg.Zone(code="RL", key="rail", label="Left — Rail"),
-        dg.Zone(code="WS", key="workstation", label="Bottom — Workstation"),
-        dg.Zone(code="CX", key="connections", label="Connections — cross-zone wiring"),
+        dg.Zone(code="NB", key="notebook", label="Right: Notebook"),
+        dg.Zone(code="RL", key="rail", label="Left: Rail"),
+        dg.Zone(code="WS", key="workstation", label="Bottom: Workstation"),
+        dg.Zone(code="CX", key="connections", label="Connections: cross-zone wiring"),
     )
     return dg.ContextConfig(
         product_name="Testware",
@@ -155,7 +155,7 @@ def test_render_index_groups_by_zone():
     cfg = _cfg()
     bugs = dg.assign_bug_ids(_sample_result()["bugs"], cfg)
     idx = dg.render_index("2026-06-25T10-00-00", bugs, cfg)
-    assert "Right — Notebook" in idx and "Left — Rail" in idx and "Connections" in idx
+    assert "Right: Notebook" in idx and "Left: Rail" in idx and "Connections" in idx
     assert "NB-01" in idx and "bugs/notebook-01-" in idx
 
 

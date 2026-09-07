@@ -464,7 +464,7 @@ def assign_bug_ids(bugs: list[dict], cfg: ContextConfig) -> list[dict]:
 
 def render_bug_md(bug: dict, manifest_by_id: dict[str, dict], cfg: ContextConfig) -> str:
     return (
-        f"# {bug['id']} — {bug.get('title', '(untitled)')}\n\n"
+        f"# {bug['id']}: {bug.get('title', '(untitled)')}\n\n"
         f"- **Zone:** {cfg.zone_label.get(bug['zone'], bug['zone'])}\n"
         f"- **Severity:** {bug.get('severity', '')}\n"
         f"- **Screen / location:** {bug.get('screen', '_(unspecified)_')}\n"
@@ -492,7 +492,7 @@ def _counts_line(c: dict[str, int]) -> str:
 
 
 def render_index(session_id: str, bugs: list[dict], cfg: ContextConfig) -> str:
-    lines = [f"# Bug Index — {session_id}\n"]
+    lines = [f"# Bug Index: {session_id}\n"]
     c = _counts(bugs, cfg)
     lines.append(f"{len(bugs)} items: {_counts_line(c)}.\n")
     for zone in cfg.zone_keys:
@@ -519,8 +519,8 @@ def _zone_section(bugs: list[dict], zone: str, manifest_by_id: dict[str, dict]) 
     for b in zone_bugs:
         shots = _screenshot_refs_md(b.get("screenshot_refs", []), manifest_by_id, from_subdir=False)
         blocks.append(
-            f"### {b['id']} — {b.get('title', '')}  ·  `{b.get('severity', '')}`\n\n"
-            f"- **Screen:** {b.get('screen', '_(unspecified)_')}  ·  **Timecode:** {b.get('timecode', '—')}\n"
+            f"### {b['id']}: {b.get('title', '')}  ·  `{b.get('severity', '')}`\n\n"
+            f"- **Screen:** {b.get('screen', '_(unspecified)_')}  ·  **Timecode:** {b.get('timecode', 'n/a')}\n"
             f"- **Broken:** {b.get('what', '')}\n"
             f"- **Expected:** {b.get('expected', '_(not specified)_')}\n"
             f"- **Fix:** {b.get('suggested_fix', '_(none suggested)_')}\n"
@@ -549,12 +549,12 @@ def render_digest(session_id: str, meta: dict, bugs: list[dict], result: dict,
         for z in cfg.zone_keys
     )
     return (
-        f"# {cfg.product_name} — Session Digest — {session_id}\n\n"
+        f"# {cfg.product_name} Session Digest: {session_id}\n\n"
         "> Single hand-off doc. Each zone is a self-contained worklist so one developer can "
         "take it end to end. Per-bug detail lives in `bugs/`.\n\n"
         f"- **Captured:** {captured}\n"
         f"- **Recording:** `{recording}`\n"
-        f"- **Totals:** {len(bugs)} items — {_counts_line(c)}\n\n"
+        f"- **Totals:** {len(bugs)} items, {_counts_line(c)}\n\n"
         + (f"**Summary.** {summary}\n\n" if summary else "")
         + _dispatch_md(cfg) + "\n---\n\n"
         + sections + "\n\n---\n\n"
@@ -578,7 +578,7 @@ def assemble_team_brief(session_dir: Path, cfg: ContextConfig) -> str | None:
         return md.replace("../screenshots/", "screenshots/")
 
     parts: list[str] = []
-    parts.append(f"# {cfg.product_name} — Session Bug & Wiring Brief\n\nSession: `{session_dir.name}`\n")
+    parts.append(f"# {cfg.product_name}: Session Bug & Wiring Brief\n\nSession: `{session_dir.name}`\n")
     parts.append(
         "This is the complete hand-off from a narrated walkthrough. Every bug and every "
         "workflow that needs connecting is below, in full, grouped by the zone it lives in. "

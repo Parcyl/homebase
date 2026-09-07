@@ -1,4 +1,4 @@
-# PRD — [Feature Name]
+# PRD: [Feature Name]
 
 > Auto-generated from session [session-id] on [YYYY-MM-DD]. Source recording: `recordings/[session-id]/raw.mp4`. Workflow map: `recordings/[session-id]/workflow-map.md`. This PRD specs buildable components, not an automation of the operator's visual judgment.
 
@@ -15,7 +15,7 @@ What the operator does manually today, in operator terms. The friction the compo
 ## Components
 Each component is a buildable unit. Carry the full contract through.
 
-### C1 — [Component name]
+### C1: [Component name]
 - Category: [ui_ux | data_integration | codifiable_logic | ai_intelligence | open_question]
 - Does: [one sentence]
 - Encoded logic: [the rule with concrete thresholds/fields]
@@ -27,7 +27,7 @@ Each component is a buildable unit. Carry the full contract through.
   // out { ... }
   ```
 - Acceptance criteria:
-  - [ ] [behavior] — validation: [method] — threshold: [pass bar]
+  - [ ] [behavior], validation: [method], threshold: [pass bar]
 - Scope: [v1 | Phase 2]
 
 ### C2 ... (repeat for every component)

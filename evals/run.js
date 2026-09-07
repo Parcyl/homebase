@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 //
-// homebase invariant evals — the shipped product gate.
+// homebase invariant evals: the shipped product gate.
 //
 // Dependency-free Node (stdlib only). Exits non-zero when any invariant is violated, so it
 // can run in the pre-commit gate and in CI regardless of which optional parts of the stack
@@ -267,7 +267,7 @@ function evalLiveSessionNeverProcessed() {
 //
 // The BRAND term (the company name/domain) is forbidden everywhere the PERSONAL rule applies
 // EXCEPT the deliberate branding surfaces: the README credits the project to the company, and
-// LICENSE. Engine code, adapters, and docs still fail on it — a stray brand token there means
+// LICENSE. Engine code, adapters, and docs still fail on it, a stray brand token there means
 // un-scrubbed source, not intentional branding.
 const PERSONAL_EXEMPT_FILES = new Set(['LICENSE'])
 const BRAND_EXEMPT_FILES = new Set(['LICENSE', 'README.md'])

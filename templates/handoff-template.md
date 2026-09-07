@@ -1,4 +1,4 @@
-# Claude Code Handoff — [Feature Name]
+# Claude Code Handoff: [Feature Name]
 
 > Auto-generated from `prds/[session-id]/PRD.md`. Paste this into Claude Code in the target project directory. This handoff specs buildable components. It does not prescribe frameworks, files, or function signatures. Design the architecture.
 
@@ -7,7 +7,7 @@
 ## Context
 [One paragraph. The workflow this came from, what it is for, and who uses it. Reference the source recording and PRD by path. State that this specs the buildable components of the workflow and does NOT automate the operator's visual judgment.]
 
-## Target context (grounding — honest)
+## Target context (grounding: honest)
 - Target repo: [name it if one was provided and read; otherwise write "NOT PROVIDED for this session. Every 'what exists' claim below is labeled to investigate, not asserted. When a target repo is named, this section is replaced by a real read of that codebase."]
 - Assumed stack (until confirmed): [the minimum assumptions needed to scope component boundaries, clearly marked as assumptions. If the real stack differs, the component boundaries hold and only the integration glue changes.]
 
@@ -16,7 +16,7 @@
 ## Components to build
 For each component: category, what it does, the operator logic it encodes (with rationale), data contract + integration status, UI/UX behavior, example I/O, acceptance criteria (validation + threshold), and scope.
 
-### C1 — [Component name]
+### C1: [Component name]
 - Category: [ui_ux | data_integration | codifiable_logic | ai_intelligence | open_question]
 - Does: [one sentence]
 - Logic encoded: [the operator rule as an encodable spec, with concrete thresholds/fields]. Rationale: [WHY it holds, in operator reasoning].
@@ -40,7 +40,7 @@ For each component: category, what it does, the operator logic it encodes (with 
 For each visual or experiential judgment the operator made:
 - [Judgment name]: [what the operator infers]. This is genuine [visual/experiential] expertise. v1: [operator-assisted one-click fallback]. Phase 2: [automation approach]. It is a hard error to spec this as a trivial v1 classifier.
 
-## What exists (to investigate — none asserted)
+## What exists (to investigate: none asserted)
 [Bulleted list of every integration/dataset/service the components depend on, each labeled "to investigate" unless a named target repo was read. State how to verify each. Never assert an integration exists without a repo read.]
 
 ## What is missing (the build)

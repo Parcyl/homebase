@@ -1,4 +1,4 @@
-# {id} — {title}
+# {id}: {title}
 
 - **Zone:** {zone}
 - **Severity:** {severity}

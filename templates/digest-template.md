@@ -1,4 +1,4 @@
-# {product_name} — Session Digest — {session_id}
+# {product_name} Session Digest: {session_id}
 
 > Single hand-off doc. Each zone is a self-contained worklist so one developer can take it
 > end to end. Read top to bottom, or jump to your zone. Per-item detail lives in `bugs/`.
@@ -7,7 +7,7 @@
 
 - **Captured:** {captured}
 - **Recording:** `{recording}`
-- **Totals:** {total} items — {severity_counts}
+- **Totals:** {total} items, {severity_counts}
 
 ## How to dispatch this
 

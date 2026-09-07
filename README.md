@@ -10,6 +10,12 @@ Point your screen recorder and your dictation tool at homebase, do the work whil
 
 ![what homebase produces — one session's real output tree: 49 developer-ready bug cards, 48 timestamped screenshots, and the stitched DIGEST / PRD / TEAM_BRIEF docs](docs/output-tree.png)
 
+<br/>
+
+![a slice of a real DIGEST.md — a prioritized, zone-partitioned worklist where every bug is developer-ready and linked to the screenshot at its timecode](docs/digest-example.png)
+
+<sub>A slice of one real session's `DIGEST.md`: 49 triaged bugs, each with what broke, expected behavior, a suggested fix, and a link to the screenshot at its timecode.</sub>
+
 </div>
 
 ---

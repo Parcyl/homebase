@@ -8,6 +8,8 @@ Point your screen recorder and your dictation tool at homebase, do the work whil
 
 ![homebase architecture](docs/architecture.svg)
 
+<br/>
+
 ![what homebase produces — one session's real output tree: 49 developer-ready bug cards, 48 timestamped screenshots, and the stitched DIGEST / PRD / TEAM_BRIEF docs](docs/output-tree.png)
 
 <br/>

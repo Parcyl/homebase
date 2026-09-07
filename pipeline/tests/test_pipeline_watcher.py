@@ -63,6 +63,28 @@ def test_find_pending_skips_processed(fake_homebase: Path):
     assert pw.find_pending_recordings(fake_homebase) == []
 
 
+def test_find_pending_skips_session_that_is_still_recording(fake_homebase: Path):
+    """A session with start_epoch and no stop_epoch is still recording -- session_is_live()
+    must skip it, or the watcher would POST a partial recording mid-session and stamp it
+    .processed, silently discarding the rest of the narration (mirrors
+    test_doc_generator.py's test_find_pending_skips_session_that_is_still_recording, since
+    both flows share the same liveness gate)."""
+    s = _make_session(fake_homebase, "2026-05-27T10-00-00-live", mtime_offset=-600)
+    (s / "session.json").write_text(json.dumps({"start_epoch": time.time()}), encoding="utf-8")
+    assert s not in pw.find_pending_recordings(fake_homebase)
+
+
+def test_find_pending_returns_session_with_stop_epoch(fake_homebase: Path):
+    """A session that has stopped (stop_epoch present) is not live and must still be
+    returned once its recording has settled."""
+    s = _make_session(fake_homebase, "2026-05-27T10-00-00-stopped", mtime_offset=-600)
+    (s / "session.json").write_text(
+        json.dumps({"start_epoch": time.time() - 100, "stop_epoch": time.time()}),
+        encoding="utf-8",
+    )
+    assert s in pw.find_pending_recordings(fake_homebase)
+
+
 def test_ensure_transcript_loads_existing(fake_homebase: Path):
     s = _make_session(fake_homebase, "2026-05-27T10-00-00-d", mtime_offset=-10)
     (s / "transcript.json").write_text(json.dumps({"text": "hello"}))

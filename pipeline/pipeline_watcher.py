@@ -30,6 +30,16 @@ from urllib.request import Request, urlopen
 
 _HERE = Path(__file__).resolve().parent
 _REPO_ROOT = _HERE.parent
+if str(_HERE) not in sys.path:
+    sys.path.insert(0, str(_HERE))
+
+# session_is_live() is the single canonical liveness check (Flow A's doc_generator.py owns
+# it -- session.json's start_epoch/stop_epoch fields are the authoritative "still recording"
+# signal). Import rather than re-implement, so the two capture flows can never drift out of
+# agreement on what "live" means. Without this, a watcher can POST a still-recording session
+# to the intelligence spine mid-record and stamp it .processed, silently discarding the rest
+# of the narration.
+from doc_generator import session_is_live  # noqa: E402
 
 POLL_INTERVAL_S = 5
 RECORDING_SETTLE_S = 2
@@ -141,7 +151,8 @@ def adopt_recording(session_dir: Path) -> Path | None:
 
 
 def find_pending_recordings(homebase: Path) -> list[Path]:
-    """Return session dirs that have a stable recording (.mp4) and no .processed marker."""
+    """Return session dirs that have a stable recording (.mp4), no .processed marker, and
+    are not still recording (see session_is_live())."""
     recordings = homebase / SESSIONS_DIR
     if not recordings.exists():
         return []
@@ -154,6 +165,8 @@ def find_pending_recordings(homebase: Path) -> list[Path]:
         if mp4 is None:
             continue
         if (session_dir / ".processed").exists():
+            continue
+        if session_is_live(session_dir):
             continue
         try:
             age = now - mp4.stat().st_mtime

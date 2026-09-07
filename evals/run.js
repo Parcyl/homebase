@@ -151,37 +151,59 @@ function evalTeamBriefCompleteness() {
 // from the partial, and stamp .processed so it never retries -- silently discarding the rest
 // of the narration. Source: pipeline/doc_generator.py session_is_live() + find_pending().
 //
-// This drives the REAL find_pending() against a live fixture rather than grepping for the
-// guard, which would pass on a guard that does not actually work.
+// The repo ships TWO capture flows over one shared capture layer: Flow A
+// (doc_generator.find_pending()) and Flow B (pipeline_watcher.find_pending_recordings()).
+// Both must honor the same liveness gate -- pipeline_watcher imports session_is_live()
+// from doc_generator rather than re-implementing it, so this probes both watchers against
+// the same fixture shape to make sure that wiring actually holds for each of them.
+//
+// This drives the REAL find_pending()/find_pending_recordings() against a live fixture
+// rather than grepping for the guard, which would pass on a guard that does not actually
+// work.
 // ---------------------------------------------------------------------------
 function evalLiveSessionNeverProcessed() {
   const pipelineDir = join(ROOT, 'pipeline')
   if (!existsSync(join(pipelineDir, 'doc_generator.py'))) {
     return { ok: false, detail: 'pipeline/doc_generator.py is missing' }
   }
+  if (!existsSync(join(pipelineDir, 'pipeline_watcher.py'))) {
+    return { ok: false, detail: 'pipeline/pipeline_watcher.py is missing' }
+  }
 
   const probe = [
     'import json, os, sys, tempfile, time, pathlib',
     `sys.path.insert(0, ${JSON.stringify(pipelineDir)})`,
     'import doc_generator as dg',
-    'tmp = pathlib.Path(tempfile.mkdtemp())',
+    'import pipeline_watcher as pw',
     '',
-    '# A session that started and never stopped is LIVE.',
-    'live = tmp / dg.SESSIONS_DIR / "live"; live.mkdir(parents=True)',
-    '(live / "session.json").write_text(json.dumps({"start_epoch": time.time()}))',
-    'r = live / "raw.mp4"; r.write_bytes(b"PARTIAL")',
-    'o = r.stat().st_mtime - 3600; os.utime(r, (o, o))   # long past any settle window',
+    'def make_fixture(root):',
+    '    # A session that started and never stopped is LIVE.',
+    '    live = root / dg.SESSIONS_DIR / "live"; live.mkdir(parents=True)',
+    '    (live / "session.json").write_text(json.dumps({"start_epoch": time.time()}))',
+    '    r = live / "raw.mp4"; r.write_bytes(b"PARTIAL")',
+    '    o = r.stat().st_mtime - 3600; os.utime(r, (o, o))   # long past any settle window',
     '',
-    '# A session with stop_epoch must still be picked up.',
-    'done = tmp / dg.SESSIONS_DIR / "done"; done.mkdir(parents=True)',
-    '(done / "session.json").write_text(',
-    '    json.dumps({"start_epoch": time.time() - 100, "stop_epoch": time.time()}))',
-    'r2 = done / "raw.mp4"; r2.write_bytes(b"FULL")',
-    'o2 = r2.stat().st_mtime - 3600; os.utime(r2, (o2, o2))',
+    '    # A session with stop_epoch must still be picked up.',
+    '    done = root / dg.SESSIONS_DIR / "done"; done.mkdir(parents=True)',
+    '    (done / "session.json").write_text(',
+    '        json.dumps({"start_epoch": time.time() - 100, "stop_epoch": time.time()}))',
+    '    r2 = done / "raw.mp4"; r2.write_bytes(b"FULL")',
+    '    o2 = r2.stat().st_mtime - 3600; os.utime(r2, (o2, o2))',
+    '    return live, done',
     '',
-    'pending = dg.find_pending(tmp)',
-    'print("LIVE_SKIPPED" if live not in pending else "LIVE_PROCESSED")',
-    'print("STOPPED_PENDING" if done in pending else "STOPPED_SKIPPED")',
+    '# Flow A: doc_generator.find_pending().',
+    'tmp_a = pathlib.Path(tempfile.mkdtemp())',
+    'live_a, done_a = make_fixture(tmp_a)',
+    'pending_a = dg.find_pending(tmp_a)',
+    'print("A_LIVE_SKIPPED" if live_a not in pending_a else "A_LIVE_PROCESSED")',
+    'print("A_STOPPED_PENDING" if done_a in pending_a else "A_STOPPED_SKIPPED")',
+    '',
+    '# Flow B: pipeline_watcher.find_pending_recordings().',
+    'tmp_b = pathlib.Path(tempfile.mkdtemp())',
+    'live_b, done_b = make_fixture(tmp_b)',
+    'pending_b = pw.find_pending_recordings(tmp_b)',
+    'print("B_LIVE_SKIPPED" if live_b not in pending_b else "B_LIVE_PROCESSED")',
+    'print("B_STOPPED_PENDING" if done_b in pending_b else "B_STOPPED_SKIPPED")',
   ].join('\n')
 
   let out = null
@@ -198,17 +220,29 @@ function evalLiveSessionNeverProcessed() {
   }
 
   const problems = []
-  if (!out.includes('LIVE_SKIPPED')) {
+  if (!out.includes('A_LIVE_SKIPPED')) {
     problems.push(
-      'find_pending() returned a session with no stop_epoch: a live recording would be ' +
-        'processed mid-session and stamped .processed'
+      'doc_generator.find_pending() (Flow A) returned a session with no stop_epoch: a live ' +
+        'recording would be processed mid-session and stamped .processed'
     )
   }
-  if (!out.includes('STOPPED_PENDING')) {
-    problems.push('find_pending() ignored a stopped session: the gate is too aggressive')
+  if (!out.includes('A_STOPPED_PENDING')) {
+    problems.push('doc_generator.find_pending() (Flow A) ignored a stopped session: the gate is too aggressive')
+  }
+  if (!out.includes('B_LIVE_SKIPPED')) {
+    problems.push(
+      'pipeline_watcher.find_pending_recordings() (Flow B) returned a session with no ' +
+        'stop_epoch: a live recording would be processed mid-session and stamped .processed'
+    )
+  }
+  if (!out.includes('B_STOPPED_PENDING')) {
+    problems.push(
+      'pipeline_watcher.find_pending_recordings() (Flow B) ignored a stopped session: the ' +
+        'gate is too aggressive'
+    )
   }
   return problems.length === 0
-    ? { ok: true, detail: 'live sessions are skipped, stopped sessions still process' }
+    ? { ok: true, detail: 'both watchers (Flow A + Flow B) skip live sessions, stopped sessions still process' }
     : { ok: false, detail: problems.join('; ') }
 }
 

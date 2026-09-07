@@ -30,7 +30,7 @@ def generate_node(state: PipelineState) -> dict:
     prompt_template = _PROMPT_PATH.read_text(encoding="utf-8")
     rendered = prompt_template.format(
         workflow_map_template=_read_template("workflow-map-template.md"),
-        prd_template=_read_template("PRD-template.md"),
+        prd_template=_read_template("prd-template.md"),
         handoff_template=_read_template("handoff-template.md"),
         session_id=state["session_id"],
         recording_path=state["recording_path"],

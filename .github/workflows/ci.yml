@@ -1,0 +1,33 @@
+name: CI
+
+# Runs the homebase invariant eval gate on every PR and on pushes to main.
+# The gate (evals/run.js) is dependency-free Node and shells out to python3 for the
+# find_pending() probe; pipeline/doc_generator.py imports stdlib-only (its heavy
+# dependencies -- the Anthropic client, ffmpeg -- are lazy/subprocess), so it runs on a
+# clean Linux runner with no extra install.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  invariants:
+    name: Invariant evals
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Run homebase invariant evals
+        run: node evals/run.js

@@ -159,3 +159,39 @@ def test_health_last_entry_age_none_when_no_entries(tmp_path: Path):
                              crash_dir=tmp_path / "no-crashes-here",
                              pgrep=lambda pattern: [123], proc_start_epoch=lambda pid: 0.0)
     assert provider.health().last_entry_age_s is None
+
+
+# ---------- optional start()/stop() control (NOT part of TranscriptProvider) ------------
+
+def test_start_invokes_runner_with_start_script(tmp_path: Path):
+    calls = []
+    provider = VowenProvider(history_path=tmp_path / "nope.json",
+                             runner=lambda script: calls.append(script))
+    provider.start()
+    assert len(calls) == 1
+    assert calls[0].name == "vowen_start.applescript"
+
+
+def test_stop_invokes_runner_with_stop_script(tmp_path: Path):
+    calls = []
+    provider = VowenProvider(history_path=tmp_path / "nope.json",
+                             runner=lambda script: calls.append(script))
+    provider.stop()
+    assert len(calls) == 1
+    assert calls[0].name == "vowen_stop.applescript"
+
+
+def test_applescript_files_exist_next_to_module():
+    from providers.transcript.vowen import START_SCRIPT, STOP_SCRIPT
+    assert START_SCRIPT.exists()
+    assert STOP_SCRIPT.exists()
+
+
+def test_other_providers_have_no_start_stop_control():
+    """FileProvider/WisprFlowProvider are read-only -- callers must getattr/callable-check
+    before calling start()/stop(), exactly because most providers lack them."""
+    from providers.transcript.file import FileProvider
+    from providers.transcript.wisprflow import WisprFlowProvider
+
+    assert not hasattr(FileProvider(), "start")
+    assert not hasattr(WisprFlowProvider(), "start")

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.homebase.docgen.watcher</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>__PYTHON_BIN__</string>
+        <string>__HOMEBASE_ROOT__/pipeline/doc_generator.py</string>
+        <string>--watch</string>
+    </array>
+
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>HOMEBASE_ROOT</key>
+        <string>__HOMEBASE_ROOT__</string>
+        <key>FFMPEG_BIN</key>
+        <string>__FFMPEG_BIN__</string>
+        <key>FFPROBE_BIN</key>
+        <string>__FFPROBE_BIN__</string>
+        <key>LOG_LEVEL</key>
+        <string>INFO</string>
+        <key>PATH</key>
+        <string>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin</string>
+    </dict>
+
+    <key>WorkingDirectory</key>
+    <string>__HOMEBASE_ROOT__</string>
+
+    <key>RunAtLoad</key>
+    <true/>
+
+    <key>KeepAlive</key>
+    <true/>
+
+    <key>StandardOutPath</key>
+    <string>__HOMEBASE_ROOT__/agents/docgen_watcher.stdout.log</string>
+
+    <key>StandardErrorPath</key>
+    <string>__HOMEBASE_ROOT__/agents/docgen_watcher.stderr.log</string>
+</dict>
+</plist>

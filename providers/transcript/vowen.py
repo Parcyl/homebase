@@ -7,6 +7,14 @@ checks, source lines ~40-135). The pipeline no longer imports either of those di
 it asks a TranscriptProvider for entries and health, and this is the Vowen implementation
 of that contract.
 
+`start()`/`stop()` are an OPTIONAL, duck-typed extra -- NOT part of the TranscriptProvider
+protocol (see provider.py). Most providers are read-only (FileProvider, WisprFlowProvider
+have no capture to control at all); Vowen is the one shipped adapter with a start/stop
+control, driven by its Hands-Free Mode shortcut via AppleScript, same mechanism as
+providers/recorder/screen_studio.py's start()/stop(). A caller that wants to drive dictation
+capture (see menubar/actions/start_session.sh) must check for these with getattr/callable
+before calling -- they are absent on every other provider.
+
 Vowen stores its history newest-first, one entry per completed dictation:
     [{"timestamp": "2026-06-01T20:35:00Z", "text": "..."}, ...]
 `transcription-history.json` retains a bounded window of recent entries (currently ~100),
@@ -35,6 +43,10 @@ from pathlib import Path
 from typing import Callable
 
 from providers.transcript.provider import HealthIssue, ProviderHealth, TranscriptEntry
+
+_HERE = Path(__file__).resolve().parent
+START_SCRIPT = _HERE / "vowen_start.applescript"
+STOP_SCRIPT = _HERE / "vowen_stop.applescript"
 
 DEFAULT_HISTORY_PATH = Path(os.environ.get(
     "VOWEN_HISTORY_PATH",
@@ -147,6 +159,13 @@ def _pgrep(pattern: str) -> list[int]:
         return []
 
 
+def _run_osascript(script: Path) -> None:
+    try:
+        subprocess.run(["osascript", str(script)], capture_output=True, timeout=10, check=False)
+    except (subprocess.TimeoutExpired, FileNotFoundError, OSError):
+        pass  # best-effort: a stuck/missing osascript must never crash the session flow
+
+
 def _proc_start_epoch(pid: int) -> float | None:
     """Unix start time of a pid via `ps -o lstart=`. None if unavailable."""
     try:
@@ -185,8 +204,9 @@ def _to_entry(raw: dict) -> TranscriptEntry:
 class VowenProvider:
     """Reads Vowen's `transcription-history.json`.
 
-    All live-system probes (pgrep, crash-dump mtime, process start time) are injectable so
-    tests never need a real Vowen install; see providers/transcript/tests/test_vowen.py.
+    All live-system probes (pgrep, crash-dump mtime, process start time, the AppleScript
+    runner) are injectable so tests never need a real Vowen install; see
+    providers/transcript/tests/test_vowen.py.
     """
 
     name = "vowen"
@@ -201,6 +221,7 @@ class VowenProvider:
         pgrep: Callable[[str], list[int]] = _pgrep,
         proc_start_epoch: Callable[[int], float | None] = _proc_start_epoch,
         now_fn: Callable[[], float] = time.time,
+        runner: Callable[[Path], None] = _run_osascript,
     ) -> None:
         self.history_path = history_path or DEFAULT_HISTORY_PATH
         self.settings_path = settings_path or DEFAULT_SETTINGS_PATH
@@ -209,6 +230,7 @@ class VowenProvider:
         self._pgrep = pgrep
         self._proc_start_epoch = proc_start_epoch
         self._now = now_fn
+        self._run = runner
 
     def entries_in_window(
         self,
@@ -220,6 +242,19 @@ class VowenProvider:
         hi = None if stop_epoch is None else stop_epoch + grace_s
         raw = _select_window(self.history_path, start_epoch - tolerance_s, hi)
         return [_to_entry(e) for e in raw]
+
+    def start(self) -> None:
+        """Toggle Vowen's Hands-Free Mode on via AppleScript.
+
+        OPTIONAL control, not part of TranscriptProvider -- see the module docstring. Takes
+        no session_dir (unlike RecorderAdapter.start): Vowen's Hands-Free Mode is a single
+        stateless toggle with no concept of a session, so there is nothing to scope it to.
+        """
+        self._run(START_SCRIPT)
+
+    def stop(self) -> None:
+        """Toggle Vowen's Hands-Free Mode off (same toggle as start()). OPTIONAL control."""
+        self._run(STOP_SCRIPT)
 
     def health(self) -> ProviderHealth:
         pids = self._pgrep("Vowen")

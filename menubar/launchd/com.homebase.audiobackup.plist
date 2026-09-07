@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.homebase.audiobackup</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>__PYTHON_BIN__</string>
+        <string>__HOMEBASE_ROOT__/pipeline/audio_backup_daemon.py</string>
+    </array>
+
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>HOMEBASE_ROOT</key>
+        <string>__HOMEBASE_ROOT__</string>
+        <key>FFMPEG_BIN</key>
+        <string>__FFMPEG_BIN__</string>
+        <key>FFPROBE_BIN</key>
+        <string>__FFPROBE_BIN__</string>
+        <key>PATH</key>
+        <string>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin</string>
+    </dict>
+
+    <key>WorkingDirectory</key>
+    <string>__HOMEBASE_ROOT__</string>
+
+    <key>RunAtLoad</key>
+    <false/>
+
+    <key>KeepAlive</key>
+    <false/>
+
+    <key>StandardOutPath</key>
+    <string>__HOMEBASE_ROOT__/agents/audiobackup.stdout.log</string>
+
+    <key>StandardErrorPath</key>
+    <string>__HOMEBASE_ROOT__/agents/audiobackup.stderr.log</string>
+</dict>
+</plist>

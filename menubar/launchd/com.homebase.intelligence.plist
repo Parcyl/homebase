@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.homebase.intelligence</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>__HOMEBASE_ROOT__/intelligence/run.sh</string>
+    </array>
+
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>HOMEBASE_ROOT</key>
+        <string>__HOMEBASE_ROOT__</string>
+        <key>LANGGRAPH_HOST</key>
+        <string>127.0.0.1</string>
+        <key>LANGGRAPH_PORT</key>
+        <string>8080</string>
+        <key>PYTHON_BIN</key>
+        <string>__PYTHON_BIN__</string>
+        <key>PATH</key>
+        <string>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin</string>
+    </dict>
+
+    <key>WorkingDirectory</key>
+    <string>__HOMEBASE_ROOT__/intelligence</string>
+
+    <key>RunAtLoad</key>
+    <true/>
+
+    <key>KeepAlive</key>
+    <true/>
+
+    <key>ThrottleInterval</key>
+    <integer>10</integer>
+
+    <key>StandardOutPath</key>
+    <string>__HOMEBASE_ROOT__/agents/intelligence.stdout.log</string>
+
+    <key>StandardErrorPath</key>
+    <string>__HOMEBASE_ROOT__/agents/intelligence.stderr.log</string>
+</dict>
+</plist>

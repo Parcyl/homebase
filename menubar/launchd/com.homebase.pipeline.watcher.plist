@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.homebase.pipeline.watcher</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>__PYTHON_BIN__</string>
+        <string>__HOMEBASE_ROOT__/pipeline/pipeline_watcher.py</string>
+    </array>
+
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>HOMEBASE_ROOT</key>
+        <string>__HOMEBASE_ROOT__</string>
+        <key>LANGGRAPH_URL</key>
+        <string>http://127.0.0.1:8080</string>
+        <key>FFMPEG_BIN</key>
+        <string>__FFMPEG_BIN__</string>
+        <key>PYTHON_BIN</key>
+        <string>__PYTHON_BIN__</string>
+        <key>LOG_LEVEL</key>
+        <string>INFO</string>
+        <key>PATH</key>
+        <string>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin</string>
+    </dict>
+
+    <key>WorkingDirectory</key>
+    <string>__HOMEBASE_ROOT__</string>
+
+    <key>RunAtLoad</key>
+    <true/>
+
+    <key>KeepAlive</key>
+    <true/>
+
+    <key>StandardOutPath</key>
+    <string>__HOMEBASE_ROOT__/agents/pipeline_watcher.stdout.log</string>
+
+    <key>StandardErrorPath</key>
+    <string>__HOMEBASE_ROOT__/agents/pipeline_watcher.stderr.log</string>
+</dict>
+</plist>

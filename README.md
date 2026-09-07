@@ -1,21 +1,28 @@
 # homebase
 
-Record your work once; homebase turns the recording into a structured doc set — a PRD, a
-prioritized digest, per-item cards with screenshots, and a team handoff — automatically.
+Record your work once; homebase turns the recording into a structured doc set —
+automatically. **Bring your own tools:** pick your dictation source and your screen
+recorder, and homebase watches for a finished session and does the rest.
 
-**Bring your own tools.** Pick your dictation source and your screen recorder; homebase does
-the rest. It watches for a finished session, extracts frames, runs a multimodal + LangGraph
-intelligence pipeline over the video and narration, and writes the docs.
-
-## How it works
+One shared capture layer feeds **two independent analysis pipelines**, so pick the one that
+answers your question (or run both against the same recording):
 
 ```
 record  (your recorder + your dictation)
-  → homebase watches the session folder
-  → frame extraction (ffmpeg) + narration (your transcript provider)
-  → intelligence spine  (classify → extract → generate)
-  → canonical doc set + handoff bundle
+  → homebase watches the session folder for a finished raw.mp4 + transcript
+  →
+     Pipeline A — doc_generator.py               Pipeline B — pipeline_watcher.py
+     "what's broken / what was asked"             "what workflow did I just do"
+     zoned bug triage via context_config          LangGraph spine (classify → extract →
+     + one multimodal Claude call                 ground → compare → generate)
+       ↓                                              ↓
+     PRD + DIGEST + per-bug cards +               PRD + Claude Code handoff prompt +
+     screenshots + team brief, in the             reusable workflow pattern, in
+     session folder                               prds/<session>/
 ```
+
+Full architecture, including the adapter/seam pattern and exact output paths:
+**`docs/ARCHITECTURE.md`**.
 
 ## Bring-your-own seams
 
@@ -26,8 +33,9 @@ Two things are pluggable, chosen in `.env`:
 | **Dictation** (`DICTATION_PROVIDER`) | `vowen`, `wisprflow`, `file` | `file` — drop your own `transcript.json` |
 | **Recorder** (`RECORDER`) | `screen-studio`, `file` | `file` — drop your own MP4 |
 
-Your product's structure (the "zones" and prompt the analysis uses) lives in a swappable
-`context_config` — see `context/example-webapp.json`.
+Pipeline A's product-specific structure (the "zones" and triage prompt) lives in a
+swappable `context_config` — see `context/example-webapp.json`. Pipeline B has no
+equivalent config; its LangGraph nodes classify generically.
 
 ## Quick start (macOS)
 
